@@ -1,5 +1,11 @@
 # @sitecore-content-sdk/nextjs
 
+## 2.5.2
+
+### Patch Changes
+
+- Added checks for keyboard modifiers on link clicks in RichText.tsx to allow default browser functionality such as cmd/ctrl clicks on links.
+
 ## 2.5.1
 
 ### Patch Changes
@@ -22,9 +28,9 @@
   - Angular template: `LayoutComponent` renders both components; `RouteFields` extends `PageMetadataFields`. ([c7801c3](https://github.com/sitecore/content-sdk/commit/c7801c33fe661bb4b9b6f414c72a29794de8b26a))
     - Avoid throwing errors in scClient calls when context ID in browser is missing.
 
-  * Replaces the GraphQL client used by scClient with no-op fallback in browser context, when public content ID is missing, preventing `getPage()`, `getDictionary()` and other GraphQL-bound method from throwing.
-  * Adds a guard into `getHeadLinks()` call to return empty results when client context ID is missing, instead of throwing an error.
-  * Client Context ID becomes required for rendering head links. ([5184ea7](https://github.com/sitecore/content-sdk/commit/5184ea7a4b946180169da0d19c7f8f7d61b0c8ec))
+  - Replaces the GraphQL client used by scClient with no-op fallback in browser context, when public content ID is missing, preventing `getPage()`, `getDictionary()` and other GraphQL-bound method from throwing.
+  - Adds a guard into `getHeadLinks()` call to return empty results when client context ID is missing, instead of throwing an error.
+  - Client Context ID becomes required for rendering head links. ([5184ea7](https://github.com/sitecore/content-sdk/commit/5184ea7a4b946180169da0d19c7f8f7d61b0c8ec))
 
   - Apply `rewriteMediaUrls` to `SitecoreClient.getData` results so custom Experience Edge hostnames are rewritten in component GraphQL data. ([5509bcd](https://github.com/sitecore/content-sdk/commit/5509bcddfb4134f289ce04760ee3a119d66b3d04))
   - Schema.org & JSON-LD Support ([b858df1](https://github.com/sitecore/content-sdk/commit/b858df1f6f27c4f7a00a2d33c81c5e5233790233))
