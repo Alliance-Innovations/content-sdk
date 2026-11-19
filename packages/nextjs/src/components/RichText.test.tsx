@@ -320,6 +320,81 @@ describe('RichText', () => {
     expect(router.push).callCount(0);
   });
 
+  describe('modified clicks', () => {
+    const setup = (markup: string) => {
+      const app = document.createElement('main');
+
+      document.body.appendChild(app);
+
+      const router = Router();
+
+      render(
+        <Page value={router}>
+          <RichText field={{ value: markup }} />
+        </Page>,
+        { baseElement: app }
+      );
+
+      const link = app.querySelector('a') as HTMLAnchorElement;
+
+      // Runs after the link's own handler: records whether RichText prevented the default action,
+      // then cancels the event so jsdom doesn't attempt a real navigation
+      let preventedByRichText: boolean | undefined;
+
+      app.addEventListener('click', (ev) => {
+        preventedByRichText = ev.defaultPrevented;
+        ev.preventDefault();
+      });
+
+      const click = (init: MouseEventInit = {}) => {
+        preventedByRichText = undefined;
+        link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ...init }));
+
+        return preventedByRichText;
+      };
+
+      return { router, click };
+    };
+
+    const modifiers: { name: string; init: MouseEventInit }[] = [
+      { name: 'metaKey', init: { metaKey: true } },
+      { name: 'ctrlKey', init: { ctrlKey: true } },
+      { name: 'shiftKey', init: { shiftKey: true } },
+      { name: 'altKey', init: { altKey: true } },
+      { name: 'non-primary button', init: { button: 1 } },
+    ];
+
+    modifiers.forEach(({ name, init }) => {
+      it(`should let the browser handle click with ${name}`, () => {
+        const { router, click } = setup('<div><a href="/t1">t1</a></div>');
+
+        expect(click(init)).to.equal(false);
+        expect(router.push).callCount(0);
+      });
+    });
+
+    it('should let the browser handle click on link with download attribute', () => {
+      const { router, click } = setup('<div><a href="/file.pdf" download>file</a></div>');
+
+      expect(click()).to.equal(false);
+      expect(router.push).callCount(0);
+    });
+
+    it('should let the browser handle click on link with non-self target', () => {
+      const { router, click } = setup('<div><a href="/t1" target="_top">t1</a></div>');
+
+      expect(click()).to.equal(false);
+      expect(router.push).callCount(0);
+    });
+
+    it('should route client-side on unmodified primary click', () => {
+      const { router, click } = setup('<div><a href="/t1">t1</a></div>');
+
+      expect(click()).to.equal(true);
+      expect(router.push).callCount(1);
+    });
+  });
+
   it('should not call prefetch when prefetchLinks is set to false', () => {
     const app = document.createElement('main');
 

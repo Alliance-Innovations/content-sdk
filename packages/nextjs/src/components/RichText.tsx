@@ -75,9 +75,25 @@ export const RichText = (props: RichTextProps): JSX.Element => {
   const routeHandler = (ev: MouseEvent) => {
     if (!ev.currentTarget) return;
 
+    const link = ev.currentTarget as HTMLAnchorElement;
+
+    // Let the browser handle modified / non-primary clicks (new tab, new window, download, etc.)
+    if (
+      ev.defaultPrevented ||
+      ev.button !== 0 ||
+      ev.metaKey ||
+      ev.ctrlKey ||
+      ev.shiftKey ||
+      ev.altKey ||
+      (link.target && link.target !== '_self') ||
+      link.hasAttribute('download')
+    ) {
+      return;
+    }
+
     ev.preventDefault();
 
-    const pathname = (ev.currentTarget as HTMLAnchorElement).href;
+    const pathname = link.href;
 
     if (pageRouter) {
       pageRouter.push(pathname, pathname, { locale: false });
